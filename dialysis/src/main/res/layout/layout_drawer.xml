@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height60"
+        android:background="@android:color/holo_blue_light">
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"/>
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/item1"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height30"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/margin5"
+        android:gravity="left|center_horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin10"
+            android:src="@drawable/ic_action"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/textsize16"
+            android:layout_marginLeft="@dimen/margin10"
+            android:text="开始阅读"/>
+    </LinearLayout>
+
+
+</LinearLayout>

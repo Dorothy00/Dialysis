@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Test</string>
+    <string name="hello_world">Hello world! Handle action bar item clicks here. The action bar will</string>
+    <string name="action_settings">Settings</string>
+</resources>

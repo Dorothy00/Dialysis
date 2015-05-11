@@ -1,0 +1,56 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/padding20"
+    android:paddingRight="@dimen/padding20"
+    android:paddingTop="@dimen/padding50"
+    tools:context="test.dorothy.graduation.activity.RegisterActivity">
+
+
+    <EditText
+        android:id="@+id/username"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height23"
+        android:hint="用户名"
+        android:textColorHint="@android:color/white" />
+
+    <EditText
+        android:id="@+id/email"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height23"
+        android:layout_marginTop="@dimen/margin10"
+        android:hint="邮箱"
+        android:textColorHint="@android:color/white" />
+
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height23"
+        android:layout_marginTop="@dimen/margin10"
+        android:password="true"
+        android:hint="密码"
+        android:textColorHint="@android:color/white" />
+
+    <EditText
+        android:id="@+id/confirm_password"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height23"
+        android:layout_marginTop="@dimen/margin10"
+        android:password="true"
+        android:hint="确认密码"
+        android:textColorHint="@android:color/white" />
+
+    <Button
+        android:id="@+id/register"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height23"
+        android:layout_marginTop="@dimen/margin15"
+        android:background="@color/disabled_common_green"
+        android:enabled="false"
+        android:text="注 册"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/textsize18" />
+
+</LinearLayout>
