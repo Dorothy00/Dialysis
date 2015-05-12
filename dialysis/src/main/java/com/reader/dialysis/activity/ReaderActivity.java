@@ -3,7 +3,6 @@ package com.reader.dialysis.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -11,9 +10,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.Toast;
 
 import com.avos.avoscloud.AVCloudQueryResult;
@@ -38,7 +34,7 @@ import java.util.List;
 
 import test.dorothy.graduation.activity.R;
 
-public class ReaderActivity extends FragmentActivity {
+public class ReaderActivity extends FragmentActivity implements ViewPager.OnPageChangeListener{
 
     private ViewPager mReaderViewPager;
     private List<PageSpan> mPageList;
@@ -50,6 +46,7 @@ public class ReaderActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reader);
         mReaderViewPager = (ViewPager) findViewById(R.id.view_pager);
+        mReaderViewPager.setOnPageChangeListener(this);
         mBookId = getIntent().getIntExtra("book_id", -1);
         mChapterId = getIntent().getIntExtra("chapter_id", -1);
         if (mBookId == -1 || mChapterId == -1) {
@@ -63,6 +60,21 @@ public class ReaderActivity extends FragmentActivity {
 
     public PageSpan getPageSpan(int pos) {
         return mPageList.get(pos);
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
     }
 
     private class ReaderPagerAdapter extends FragmentStatePagerAdapter {
@@ -80,6 +92,7 @@ public class ReaderActivity extends FragmentActivity {
         public int getCount() {
             return mPageList.size();
         }
+        
     }
 
     private PaintInfo setPaintInfo() {
@@ -150,19 +163,6 @@ public class ReaderActivity extends FragmentActivity {
         });
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()){
-            case MotionEvent.ACTION_DOWN:
-                Log.d("reader down----", "reader down------");
-                break;
-            case MotionEvent.ACTION_UP:
-                Log.d("reader up----", "reader up------");
-                break;
-
-        }
-        return super.onTouchEvent(event);
-    }
 
     public static Intent createIntent(Context context, int bookId, int chapterId) {
         Intent i = new Intent(context, ReaderActivity.class);

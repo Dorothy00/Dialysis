@@ -31,6 +31,7 @@ public class ReaderFragment extends Fragment {
     private int popWindowHeight;
     private int preTargetLine;
     private int preTargetWord;
+    private WordBounds wordBounds;
     private PageView mPageView;
     private PageSpan mPageSpan;
     private ReaderActivity mActivity;
@@ -73,27 +74,40 @@ public class ReaderFragment extends Fragment {
         mPageView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    dismissPopUpWindow();
-                    // 将上一个被选中的wordSpan的状态置为未选中
-                    mPageView.invalidateWordSpan(getWordBounds(preTargetLine, preTargetWord),
-                            false);
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        dismissPopUpWindow();
+                        // 将上一个被选中的wordSpan的状态置为未选中
+                        mPageView.invalidateWordSpan(getWordBounds(preTargetLine, preTargetWord),
+                                false);
 
-                    float actionX = event.getX();
-                    float actionY = event.getY();
+                        float downX = event.getX();
+                        float downY = event.getY();
 
-                    int targetLine = findTargetLine(actionY);
-                    int targetWord = -1;
-                    if (targetLine != -1) {
-                        targetWord = findTargetWord(actionX, mPageSpan.getLineSpanList().get
-                                (targetLine));
-                    }
-                    if (targetLine != -1 && targetWord != -1) {
-                        showPopupWindow(targetLine, targetWord);
-                        mPageView.invalidateWordSpan(getWordBounds(targetLine, targetWord), true);
-                        preTargetLine = targetLine;
-                        preTargetWord = targetWord;
-                    }
+                        int targetLine = findTargetLine(downY);
+                        int targetWord = -1;
+                        if (targetLine != -1) {
+                            targetWord = findTargetWord(downX, mPageSpan.getLineSpanList().get
+                                    (targetLine));
+                        }
+                        if (targetLine != -1 && targetWord != -1) {
+                            wordBounds = getWordBounds(targetLine, targetWord);
+                            preTargetLine = targetLine;
+                            preTargetWord = targetWord;
+                        }
+                        break;
+                }
+                return false;
+            }
+        });
+
+        mPageView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (wordBounds != null) {
+                    mPageView.invalidateWordSpan(wordBounds, true);
+                    showPopupWindow(wordBounds);
+                    wordBounds = null;
                 }
                 return false;
             }
@@ -103,8 +117,7 @@ public class ReaderFragment extends Fragment {
     }
 
 
-    private void showPopupWindow(int targetLine, int targetWord) {
-        WordBounds wordBounds = getWordBounds(targetLine, targetWord);
+    private void showPopupWindow(WordBounds wordBounds) {
         float spaceH = mPageSpan.getPaintInfo().getSpaceH();
         float lineH = mPageSpan.getLineH();
 
@@ -222,4 +235,12 @@ public class ReaderFragment extends Fragment {
         return result;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        dismissPopUpWindow();
+        WordSpan wordSpan = mPageSpan.getLineSpanList().get(preTargetLine).getLineSpan().get
+                (preTargetWord);
+        wordSpan.setSelected(false);
+    }
 }
