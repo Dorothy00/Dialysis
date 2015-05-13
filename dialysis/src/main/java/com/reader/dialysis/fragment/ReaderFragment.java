@@ -3,8 +3,11 @@ package com.reader.dialysis.fragment;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +56,7 @@ public class ReaderFragment extends Fragment {
         super.onAttach(activity);
         mActivity = (ReaderActivity) activity;
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -113,9 +117,20 @@ public class ReaderFragment extends Fragment {
             }
         });
 
+        mPageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AppCompatActivity compatActivity = (AppCompatActivity)getActivity();
+                if (compatActivity.getSupportActionBar().isShowing()) {
+                    compatActivity.getSupportActionBar().hide();
+                } else {
+                    compatActivity.getSupportActionBar().show();
+                }
+            }
+        });
+
         return rootView;
     }
-
 
     private void showPopupWindow(WordBounds wordBounds) {
         float spaceH = mPageSpan.getPaintInfo().getSpaceH();

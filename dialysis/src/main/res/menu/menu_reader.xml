@@ -1,9 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto"
-      xmlns:tools="http://schemas.android.com/tools"
-      tools:context="com.reader.dialysis.activity.ReaderActivity">
-    <item android:id="@+id/action_settings"
-          android:title="@string/action_settings"
-          android:orderInCategory="100"
-          app:showAsAction="never"/>
+      xmlns:compat="http://schemas.android.com/apk/res-auto"
+    >
+    <item
+        android:id="@+id/content_list"
+        android:icon="@drawable/ic_list_grey600_36dp"
+        android:title="目录"
+        android:orderInCategory="100"
+        compat:showAsAction="always"/>
+
 </menu>

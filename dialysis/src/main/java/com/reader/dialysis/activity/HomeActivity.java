@@ -55,8 +55,8 @@ public class HomeActivity extends AppCompatActivity {
             mDrawView.setUserName(avUser.getUsername());
         }
 
-        renderPanel("ds");
-        //AVService.uploadChapter(this);
+      renderPanel("ds");
+      //  AVService.uploadContents(this);
 
     }
 

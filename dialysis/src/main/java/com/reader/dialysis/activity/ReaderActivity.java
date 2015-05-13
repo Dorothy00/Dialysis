@@ -5,11 +5,15 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.WindowCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.avos.avoscloud.AVCloudQueryResult;
@@ -18,14 +22,20 @@ import com.avos.avoscloud.AVFile;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.CloudQueryCallback;
+import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.GetDataCallback;
+import com.google.gson.JsonParseException;
 import com.reader.dialysis.Model.AVChapter;
+import com.reader.dialysis.Model.AVTableContents;
 import com.reader.dialysis.Model.Chapter;
+import com.reader.dialysis.Model.Content;
 import com.reader.dialysis.Model.PageSpan;
 import com.reader.dialysis.Model.PaintInfo;
 import com.reader.dialysis.fragment.ReaderFragment;
 import com.reader.dialysis.util.DialysisSpanGenerator;
 import com.reader.dialysis.util.DialysisXmlParser;
+import com.reader.dialysis.util.JsonUtil;
+import com.reader.dialysis.util.MiscUtil;
 
 import org.apache.commons.io.IOUtils;
 
@@ -34,7 +44,7 @@ import java.util.List;
 
 import test.dorothy.graduation.activity.R;
 
-public class ReaderActivity extends FragmentActivity implements ViewPager.OnPageChangeListener{
+public class ReaderActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
 
     private ViewPager mReaderViewPager;
     private List<PageSpan> mPageList;
@@ -43,8 +53,11 @@ public class ReaderActivity extends FragmentActivity implements ViewPager.OnPage
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_reader);
+
         mReaderViewPager = (ViewPager) findViewById(R.id.view_pager);
         mReaderViewPager.setOnPageChangeListener(this);
         mBookId = getIntent().getIntExtra("book_id", -1);
@@ -52,11 +65,24 @@ public class ReaderActivity extends FragmentActivity implements ViewPager.OnPage
         if (mBookId == -1 || mChapterId == -1) {
             return;
         }
-
+        MiscUtil.forceShowOverLap(this);
         fetchChapter();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_reader, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.content_list) {
+            fetchTableContents(mBookId);
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     public PageSpan getPageSpan(int pos) {
         return mPageList.get(pos);
@@ -92,7 +118,7 @@ public class ReaderActivity extends FragmentActivity implements ViewPager.OnPage
         public int getCount() {
             return mPageList.size();
         }
-        
+
     }
 
     private PaintInfo setPaintInfo() {
@@ -101,15 +127,15 @@ public class ReaderActivity extends FragmentActivity implements ViewPager.OnPage
         int height = metrics.heightPixels;
 
 
-            int result = 0;
-            int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-            if (resourceId > 0) {
-                result = getResources().getDimensionPixelSize(resourceId);
-            }
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
 
         PaintInfo paintInfo = new PaintInfo();
         paintInfo.setScreenW(width);
-        paintInfo.setScreenH(height-result);
+        paintInfo.setScreenH(height - result);
         paintInfo.setSpaceH((int) getResources().getDimension(R.dimen.height8));
         paintInfo.setSpaceW((int) getResources().getDimension(R.dimen.width4));
         paintInfo.setPaddingTop((int) getResources().getDimension(R.dimen.padding10));
@@ -123,7 +149,7 @@ public class ReaderActivity extends FragmentActivity implements ViewPager.OnPage
         return paintInfo;
     }
 
-    private void fetchChapter(){
+    private void fetchChapter() {
         AVQuery.doCloudQueryInBackground("select include content_xml,* from Chapter where " +
                 "book_id=? and " +
                 "chapter_id=?", new CloudQueryCallback<AVCloudQueryResult>() {
@@ -142,7 +168,7 @@ public class ReaderActivity extends FragmentActivity implements ViewPager.OnPage
         }, AVChapter.class, mBookId, mChapterId);
     }
 
-    private void fetchChapterPara(AVFile avFile){
+    private void fetchChapterPara(AVFile avFile) {
         avFile.getDataInBackground(new GetDataCallback() {
             @Override
             public void done(byte[] bytes, AVException e) {
@@ -163,6 +189,28 @@ public class ReaderActivity extends FragmentActivity implements ViewPager.OnPage
         });
     }
 
+    private void fetchTableContents(int bookId) {
+        AVQuery<AVTableContents> query = new AVQuery<AVTableContents>("TableContents");
+        query.whereEqualTo("book_id", 2);
+        query.findInBackground(new FindCallback<AVTableContents>() {
+            @Override
+            public void done(List<AVTableContents> list, AVException e) {
+                if (e == null && list.size() > 0) {
+                    AVTableContents avTableContents = list.get(0);
+                    String contentsStr = avTableContents.getAVContentList();
+                    try {
+                        List<Content> contentList = JsonUtil.createList(contentsStr, Content.class);
+                        Intent intent = ContentListActivity.createIntent(ReaderActivity.this,
+                                contentList);
+                        // TODO FOR RESULT
+                        startActivity(intent);
+                    } catch (JsonParseException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
 
     public static Intent createIntent(Context context, int bookId, int chapterId) {
         Intent i = new Intent(context, ReaderActivity.class);
