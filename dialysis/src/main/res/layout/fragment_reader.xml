@@ -4,9 +4,10 @@
              android:layout_height="match_parent"
              tools:context="com.reader.dialysis.fragment.ReaderFragment">
 
-   <com.reader.dialysis.view.PageView
-       android:id="@+id/page_view"
-       android:layout_height="match_parent"
-       android:layout_width="match_parent"/>
+    <com.reader.dialysis.view.PageView
+        android:id="@+id/page_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
 
 </FrameLayout>

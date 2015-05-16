@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.WindowCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,6 +37,7 @@ import com.reader.dialysis.util.DialysisSpanGenerator;
 import com.reader.dialysis.util.DialysisXmlParser;
 import com.reader.dialysis.util.JsonUtil;
 import com.reader.dialysis.util.MiscUtil;
+import com.reader.dialysis.view.IndicatorWrapper;
 
 import org.apache.commons.io.IOUtils;
 
@@ -44,9 +46,14 @@ import java.util.List;
 
 import test.dorothy.graduation.activity.R;
 
-public class ReaderActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
+public class ReaderActivity extends AppCompatActivity {
 
+    public static final int REQUEST_CODE_CONTENTS = 0x33;
+    public static final int RESULT_CODE_CONTENTS = 0x34;
+
+    private IndicatorWrapper mIndicatorWrapper;
     private ViewPager mReaderViewPager;
+    private ReaderPagerAdapter mReaderPagerAdapter;
     private List<PageSpan> mPageList;
     private int mBookId;
     private int mChapterId;
@@ -58,8 +65,10 @@ public class ReaderActivity extends AppCompatActivity implements ViewPager.OnPag
         getSupportActionBar().hide();
         setContentView(R.layout.activity_reader);
 
+        mIndicatorWrapper = (IndicatorWrapper) findViewById(R.id.indicator_wrapper);
         mReaderViewPager = (ViewPager) findViewById(R.id.view_pager);
-        mReaderViewPager.setOnPageChangeListener(this);
+        mReaderPagerAdapter = new ReaderPagerAdapter
+                (getSupportFragmentManager());
         mBookId = getIntent().getIntExtra("book_id", -1);
         mChapterId = getIntent().getIntExtra("chapter_id", -1);
         if (mBookId == -1 || mChapterId == -1) {
@@ -84,25 +93,6 @@ public class ReaderActivity extends AppCompatActivity implements ViewPager.OnPag
         return super.onOptionsItemSelected(item);
     }
 
-    public PageSpan getPageSpan(int pos) {
-        return mPageList.get(pos);
-    }
-
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-    }
-
-    @Override
-    public void onPageSelected(int position) {
-
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {
-
-    }
-
     private class ReaderPagerAdapter extends FragmentStatePagerAdapter {
 
         public ReaderPagerAdapter(FragmentManager fm) {
@@ -110,8 +100,8 @@ public class ReaderActivity extends AppCompatActivity implements ViewPager.OnPag
         }
 
         @Override
-        public Fragment getItem(int position) {
-            return ReaderFragment.newInstance(position);
+        public Fragment getItem(int pos) {
+            return ReaderFragment.newInstance(mPageList.get(pos));
         }
 
         @Override
@@ -119,6 +109,10 @@ public class ReaderActivity extends AppCompatActivity implements ViewPager.OnPag
             return mPageList.size();
         }
 
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
     }
 
     private PaintInfo setPaintInfo() {
@@ -150,6 +144,7 @@ public class ReaderActivity extends AppCompatActivity implements ViewPager.OnPag
     }
 
     private void fetchChapter() {
+        showIndicatorWrapper();
         AVQuery.doCloudQueryInBackground("select include content_xml,* from Chapter where " +
                 "book_id=? and " +
                 "chapter_id=?", new CloudQueryCallback<AVCloudQueryResult>() {
@@ -173,25 +168,33 @@ public class ReaderActivity extends AppCompatActivity implements ViewPager.OnPag
             @Override
             public void done(byte[] bytes, AVException e) {
                 if (e == null) {
+                    String contentXml = null;
                     try {
-                        String contentXml = IOUtils.toString(bytes, "utf-8");
-                        Chapter chapter = new DialysisXmlParser().parser(contentXml);
-                        mPageList = new DialysisSpanGenerator().setupPage(chapter,
-                                setPaintInfo());
-                        mReaderViewPager.setAdapter(new ReaderPagerAdapter
-                                (getSupportFragmentManager()));
+                        contentXml = IOUtils.toString(bytes, "utf-8");
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
-
+                    if (TextUtils.isEmpty(contentXml)) {
+                        return;
+                    }
+                    Chapter chapter = new DialysisXmlParser().parser(contentXml);
+                    mPageList = new DialysisSpanGenerator().setupPage(chapter,
+                            setPaintInfo());
+                    if (mReaderViewPager.getAdapter() == null) {
+                        mReaderViewPager.setAdapter(mReaderPagerAdapter);
+                    } else {
+                        mReaderPagerAdapter.notifyDataSetChanged();
+                    }
                 }
+                hideIndicatorWrapper();
             }
         });
     }
 
     private void fetchTableContents(int bookId) {
-        AVQuery<AVTableContents> query = new AVQuery<AVTableContents>("TableContents");
-        query.whereEqualTo("book_id", 2);
+        showIndicatorWrapper();
+        AVQuery<AVTableContents> query = new AVQuery<>("TableContents");
+        query.whereEqualTo("book_id", bookId);
         query.findInBackground(new FindCallback<AVTableContents>() {
             @Override
             public void done(List<AVTableContents> list, AVException e) {
@@ -201,15 +204,28 @@ public class ReaderActivity extends AppCompatActivity implements ViewPager.OnPag
                     try {
                         List<Content> contentList = JsonUtil.createList(contentsStr, Content.class);
                         Intent intent = ContentListActivity.createIntent(ReaderActivity.this,
-                                contentList);
+                                contentList, mChapterId);
                         // TODO FOR RESULT
-                        startActivity(intent);
+                        startActivityForResult(intent, REQUEST_CODE_CONTENTS);
                     } catch (JsonParseException e1) {
                         e1.printStackTrace();
                     }
+                    showIndicatorWrapper();
                 }
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_CONTENTS && resultCode == RESULT_CODE_CONTENTS) {
+            mChapterId = data.getIntExtra("chapter_id", -1);
+            if (mChapterId != -1) {
+                fetchChapter();
+            }
+        }
     }
 
     public static Intent createIntent(Context context, int bookId, int chapterId) {
@@ -217,5 +233,17 @@ public class ReaderActivity extends AppCompatActivity implements ViewPager.OnPag
         i.putExtra("book_id", bookId);
         i.putExtra("chapter_id", chapterId);
         return i;
+    }
+
+    private void showIndicatorWrapper() {
+        if (mIndicatorWrapper != null) {
+            mIndicatorWrapper.showIndicator();
+        }
+    }
+
+    private void hideIndicatorWrapper() {
+        if (mIndicatorWrapper != null) {
+            mIndicatorWrapper.hideIndicator();
+        }
     }
 }

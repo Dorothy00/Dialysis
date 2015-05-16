@@ -1,14 +1,16 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+<com.reader.dialysis.view.IndicatorWrapper
+    android:id="@+id/indicator_wrapper"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:drawable="@drawable/ic_spinner">
 
-                tools:context="com.reader.dialysis.activity.ReaderActivity">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </android.support.v4.view.ViewPager>
+</com.reader.dialysis.view.IndicatorWrapper>
 
-</RelativeLayout>

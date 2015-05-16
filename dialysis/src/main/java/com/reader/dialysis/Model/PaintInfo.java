@@ -6,8 +6,6 @@ import android.graphics.Paint;
  * Created by dorothy on 15/5/2.
  */
 public class PaintInfo {
-    private Paint textPaint;
-    private Paint backgroundPaint;
     private float textSize;
     private int foregroundColor;
     private int backgroundColor;
@@ -20,18 +18,10 @@ public class PaintInfo {
     private int paddingRight;
     private int paddingLeft;
 
-    public PaintInfo(){
+    public PaintInfo() {
 
     }
-
-    public PaintInfo(Paint textPaint, int screenW,int screenH, int spaceW,int spaceH,int paddingTop,int paddingBottom,int paddingLeft,int paddingRight) {
-        this.textPaint = textPaint;
-        this.screenW = screenW;
-        this.screenH = screenH;
-        this.spaceW = spaceW;
-        this.spaceH = spaceH;
-    }
-
+    
     public int getSpaceW() {
         return spaceW;
     }
@@ -135,7 +125,7 @@ public class PaintInfo {
         this.foregroundColor = foregroundColor;
     }
 
-    public Paint.FontMetrics getFontMetrics(){
+    public Paint.FontMetrics getFontMetrics() {
         return getTextPaint().getFontMetrics();
     }
 

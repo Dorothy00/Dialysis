@@ -32,4 +32,9 @@ public class JsonUtil {
         Gson gson = new Gson();
         return gson.toJson(object);
     }
+
+    public static <T> T createModel(String jsonStr,Class<T> tClass){
+        Gson gson = new Gson();
+        return gson.fromJson(jsonStr,tClass);
+    }
 }

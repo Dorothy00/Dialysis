@@ -18,6 +18,7 @@ import com.reader.dialysis.Model.PageSpan;
 import com.reader.dialysis.Model.WordBounds;
 import com.reader.dialysis.Model.WordSpan;
 import com.reader.dialysis.activity.ReaderActivity;
+import com.reader.dialysis.util.JsonUtil;
 import com.reader.dialysis.view.PageView;
 
 import java.util.List;
@@ -39,10 +40,11 @@ public class ReaderFragment extends Fragment {
     private PageSpan mPageSpan;
     private ReaderActivity mActivity;
 
-    public static ReaderFragment newInstance(int pos) {
+    private static final String mashpeKey = "hCRt9XvzkImshtZFHJPdbyx6GbKlp1NoAJXjsnnznhkqbXBBpl";
+    public static ReaderFragment newInstance(PageSpan pageSpan) {
         ReaderFragment fragment = new ReaderFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt("pos", pos);
+        bundle.putString("page_span", JsonUtil.toJson(pageSpan));
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -62,6 +64,8 @@ public class ReaderFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View popView = LayoutInflater.from(getActivity()).inflate(R.layout.layout_popup, null);
+        String pageSpanStr = getArguments().getString("page_span");
+        mPageSpan = JsonUtil.createModel(pageSpanStr,PageSpan.class);
         popWindowWidth = (int) getResources().getDimension(R.dimen.width40);
         popWindowHeight = (int) getResources().getDimension(R.dimen.height40);
         popupWindow = new PopupWindow(popView, popWindowWidth, popWindowHeight);
@@ -72,7 +76,7 @@ public class ReaderFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_reader, container, false);
         mPageView = (PageView) rootView.findViewById(R.id.page_view);
-        mPageSpan = mActivity.getPageSpan(getArguments().getInt("pos"));
+      //  mPageSpan = mActivity.getPageSpan(getArguments().getInt("pos"));
         mPageView.setPageSpan(mPageSpan);
 
         mPageView.setOnTouchListener(new View.OnTouchListener() {

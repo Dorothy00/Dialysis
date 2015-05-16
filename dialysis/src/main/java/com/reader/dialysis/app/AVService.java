@@ -96,6 +96,7 @@ public class AVService {
 
     public static void uploadContents(final Context context) {
         JSONArray jsonArray = new JSONArray();
+        jsonArray.put(new Content());
         jsonArray.put(JSON.toJSONString(new Content(1, "A Scandal in Bohemia")));
         jsonArray.put(JSON.toJSONString(new Content(2, "The Red-Headed League")));
         jsonArray.put(JSON.toJSONString(new Content(3, "A Case of Identity")));

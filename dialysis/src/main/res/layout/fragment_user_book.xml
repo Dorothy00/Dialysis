@@ -1,8 +1,10 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context="com.reader.dialysis.fragment.UserBookFragment"
+<com.reader.dialysis.view.IndicatorWrapper
+    android:id="@+id/indicator_wrapper"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:drawable="@drawable/ic_spinner"
     android:padding="@dimen/padding10">
 
     <GridView
@@ -15,4 +17,4 @@
         android:horizontalSpacing="@dimen/width7"
         android:numColumns="3"/>
 
-</FrameLayout>
+</com.reader.dialysis.view.IndicatorWrapper>
