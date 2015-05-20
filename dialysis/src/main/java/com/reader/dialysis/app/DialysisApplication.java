@@ -5,8 +5,10 @@ import android.app.Application;
 import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVObject;
 import com.reader.dialysis.Model.AVChapter;
+import com.reader.dialysis.Model.AVReadTime;
 import com.reader.dialysis.Model.AVTableContents;
 import com.reader.dialysis.Model.AVUserBook;
+import com.reader.dialysis.Model.AVWord;
 
 /**
  * Created by dorothy on 15/5/6.
@@ -22,6 +24,8 @@ public class DialysisApplication extends Application {
         AVObject.registerSubclass(AVUserBook.class);
         AVObject.registerSubclass(AVTableContents.class);
         AVObject.registerSubclass(AVChapter.class);
+        AVObject.registerSubclass(AVWord.class);
+        AVObject.registerSubclass(AVReadTime.class);
         AVOSCloud.initialize(this, leanCloud_AppId, leanCloud_AppKey);
         AVOSCloud.setDebugLogEnabled(true);
     }

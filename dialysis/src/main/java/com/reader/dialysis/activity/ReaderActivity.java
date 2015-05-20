@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.view.WindowCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -27,26 +28,31 @@ import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.GetDataCallback;
 import com.google.gson.JsonParseException;
 import com.reader.dialysis.Model.AVChapter;
+import com.reader.dialysis.Model.AVReadTime;
 import com.reader.dialysis.Model.AVTableContents;
 import com.reader.dialysis.Model.Chapter;
 import com.reader.dialysis.Model.Content;
 import com.reader.dialysis.Model.PageSpan;
 import com.reader.dialysis.Model.PaintInfo;
+import com.reader.dialysis.fragment.FinishReadingFragment;
 import com.reader.dialysis.fragment.ReaderFragment;
 import com.reader.dialysis.util.DialysisSpanGenerator;
 import com.reader.dialysis.util.DialysisXmlParser;
 import com.reader.dialysis.util.JsonUtil;
 import com.reader.dialysis.util.MiscUtil;
+import com.reader.dialysis.util.UserCache;
 import com.reader.dialysis.view.IndicatorWrapper;
 
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import test.dorothy.graduation.activity.R;
 
-public class ReaderActivity extends AppCompatActivity {
+public class ReaderActivity extends AppCompatActivity implements OnPageChangeListener {
 
     public static final int REQUEST_CODE_CONTENTS = 0x33;
     public static final int RESULT_CODE_CONTENTS = 0x34;
@@ -57,6 +63,7 @@ public class ReaderActivity extends AppCompatActivity {
     private List<PageSpan> mPageList;
     private int mBookId;
     private int mChapterId;
+    private int userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,11 +76,13 @@ public class ReaderActivity extends AppCompatActivity {
         mReaderViewPager = (ViewPager) findViewById(R.id.view_pager);
         mReaderPagerAdapter = new ReaderPagerAdapter
                 (getSupportFragmentManager());
+        mTimeHelper = new TimeHelper();
         mBookId = getIntent().getIntExtra("book_id", -1);
         mChapterId = getIntent().getIntExtra("chapter_id", -1);
         if (mBookId == -1 || mChapterId == -1) {
             return;
         }
+        userId = UserCache.getUserId(this);
         MiscUtil.forceShowOverLap(this);
         fetchChapter();
     }
@@ -93,6 +102,19 @@ public class ReaderActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onResume() {
+        mTimeHelper.start();
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        mTimeHelper.pause();
+        saveReadTime();
+        super.onPause();
+    }
+
     private class ReaderPagerAdapter extends FragmentStatePagerAdapter {
 
         public ReaderPagerAdapter(FragmentManager fm) {
@@ -101,12 +123,16 @@ public class ReaderActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int pos) {
-            return ReaderFragment.newInstance(mPageList.get(pos));
+            if (pos < mPageList.size()) {
+                return ReaderFragment.newInstance(userId, mPageList.get(pos));
+            } else {
+                return FinishReadingFragment.newInstance(mBookId);
+            }
         }
 
         @Override
         public int getCount() {
-            return mPageList.size();
+            return mPageList.size() + 1;
         }
 
         @Override
@@ -156,6 +182,7 @@ public class ReaderActivity extends AppCompatActivity {
                     AVFile avFile = avObject.getAVFile("content_xml");
                     fetchChapterPara(avFile);
                 } else {
+                    hideIndicatorWrapper();
                     Toast.makeText(ReaderActivity.this, e.getMessage(), Toast.LENGTH_LONG)
                             .show();
                 }
@@ -164,6 +191,7 @@ public class ReaderActivity extends AppCompatActivity {
     }
 
     private void fetchChapterPara(AVFile avFile) {
+
         avFile.getDataInBackground(new GetDataCallback() {
             @Override
             public void done(byte[] bytes, AVException e) {
@@ -192,7 +220,6 @@ public class ReaderActivity extends AppCompatActivity {
     }
 
     private void fetchTableContents(int bookId) {
-        showIndicatorWrapper();
         AVQuery<AVTableContents> query = new AVQuery<>("TableContents");
         query.whereEqualTo("book_id", bookId);
         query.findInBackground(new FindCallback<AVTableContents>() {
@@ -210,8 +237,34 @@ public class ReaderActivity extends AppCompatActivity {
                     } catch (JsonParseException e1) {
                         e1.printStackTrace();
                     }
-                    showIndicatorWrapper();
                 }
+            }
+        });
+    }
+
+    private void saveReadTime() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, -1);
+        Date yesterday = calendar.getTime();
+
+        AVQuery<AVReadTime> avQuery = new AVQuery<>("ReadTime");
+        avQuery.whereGreaterThan("read_date", yesterday);
+        avQuery.whereLessThan("read_date", new Date());
+        avQuery.findInBackground(new FindCallback<AVReadTime>() {
+            @Override
+            public void done(List<AVReadTime> list, AVException e) {
+                if (e == null) {
+                    AVReadTime avReadTime;
+                    if (list.size() > 0) {
+                        avReadTime = list.get(0);
+                        avReadTime.addReadTime(mTimeHelper.getUsedTime());
+                    } else {
+                        avReadTime = new AVReadTime();
+                        avReadTime.initialize(userId, mTimeHelper.getUsedTime());
+                    }
+                    avReadTime.saveInBackground();
+                }
+
             }
         });
     }
@@ -244,6 +297,41 @@ public class ReaderActivity extends AppCompatActivity {
     private void hideIndicatorWrapper() {
         if (mIndicatorWrapper != null) {
             mIndicatorWrapper.hideIndicator();
+        }
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
+
+    private TimeHelper mTimeHelper;
+
+    private class TimeHelper {
+        private long startTime;
+        private long usedTime;
+
+        public void start() {
+            startTime = System.currentTimeMillis();
+        }
+
+        public void pause() {
+            usedTime += (System.currentTimeMillis() - startTime);
+            startTime = System.currentTimeMillis();
+        }
+
+        public long getUsedTime() {
+            return usedTime;
         }
     }
 }

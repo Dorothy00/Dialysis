@@ -11,10 +11,11 @@ import com.avos.avoscloud.AVObject;
 public class AVChapter extends AVObject {
     private int bookId;
     private int chapterId;
+    private int wordNum;
     private String title;
     private AVFile contentXml;
 
-    public AVChapter(){
+    public AVChapter() {
 
     }
 
@@ -24,10 +25,10 @@ public class AVChapter extends AVObject {
         this.chapterId = chapterId;
         this.title = title;
 
-        put("book_id",bookId);
-        put("chapter_id",chapterId);
-        put("title",title);
-        put("content_xml",contentXml);
+        put("book_id", bookId);
+        put("chapter_id", chapterId);
+        put("title", title);
+        put("content_xml", contentXml);
 
     }
 
@@ -41,6 +42,10 @@ public class AVChapter extends AVObject {
 
     public String getTitle() {
         return getString("title");
+    }
+
+    public int getWordNum() {
+        return getInt("word_num");
     }
 
     public AVFile getContentXml() {

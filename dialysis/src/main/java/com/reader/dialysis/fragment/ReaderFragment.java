@@ -1,25 +1,23 @@
 package com.reader.dialysis.fragment;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
 
+import com.loopj.android.http.AsyncHttpClient;
 import com.reader.dialysis.Model.LineSpan;
 import com.reader.dialysis.Model.PageSpan;
 import com.reader.dialysis.Model.WordBounds;
 import com.reader.dialysis.Model.WordSpan;
-import com.reader.dialysis.activity.ReaderActivity;
 import com.reader.dialysis.util.JsonUtil;
 import com.reader.dialysis.view.PageView;
+import com.reader.dialysis.view.PopUpView;
 
 import java.util.List;
 
@@ -31,6 +29,7 @@ import test.dorothy.graduation.activity.R;
 public class ReaderFragment extends Fragment {
 
     private PopupWindow popupWindow;
+    private PopUpView mPopUpView;
     private int popWindowWidth;
     private int popWindowHeight;
     private int preTargetLine;
@@ -38,13 +37,17 @@ public class ReaderFragment extends Fragment {
     private WordBounds wordBounds;
     private PageView mPageView;
     private PageSpan mPageSpan;
-    private ReaderActivity mActivity;
+    private int mUserId;
 
     private static final String mashpeKey = "hCRt9XvzkImshtZFHJPdbyx6GbKlp1NoAJXjsnnznhkqbXBBpl";
-    public static ReaderFragment newInstance(PageSpan pageSpan) {
+    private String url = "https://wordsapiv1.p.mashape.com/words/{word}?mashape-key=" + mashpeKey;
+    private AsyncHttpClient mClient;
+
+    public static ReaderFragment newInstance(int userId, PageSpan pageSpan) {
         ReaderFragment fragment = new ReaderFragment();
         Bundle bundle = new Bundle();
         bundle.putString("page_span", JsonUtil.toJson(pageSpan));
+        bundle.putInt("user_id", userId);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -54,21 +57,16 @@ public class ReaderFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mActivity = (ReaderActivity) activity;
-    }
-
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        View popView = LayoutInflater.from(getActivity()).inflate(R.layout.layout_popup, null);
+        mPopUpView = new PopUpView(getActivity());
+        mClient = new AsyncHttpClient();
         String pageSpanStr = getArguments().getString("page_span");
-        mPageSpan = JsonUtil.createModel(pageSpanStr,PageSpan.class);
-        popWindowWidth = (int) getResources().getDimension(R.dimen.width40);
-        popWindowHeight = (int) getResources().getDimension(R.dimen.height40);
-        popupWindow = new PopupWindow(popView, popWindowWidth, popWindowHeight);
+        mPageSpan = JsonUtil.createModel(pageSpanStr, PageSpan.class);
+        mUserId = getArguments().getInt("user_id");
+        popWindowWidth = (int) getResources().getDimension(R.dimen.width120);
+        popWindowHeight = (int) getResources().getDimension(R.dimen.height90);
+        popupWindow = new PopupWindow(mPopUpView, popWindowWidth, popWindowHeight);
     }
 
     @Override
@@ -76,7 +74,6 @@ public class ReaderFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_reader, container, false);
         mPageView = (PageView) rootView.findViewById(R.id.page_view);
-      //  mPageSpan = mActivity.getPageSpan(getArguments().getInt("pos"));
         mPageView.setPageSpan(mPageSpan);
 
         mPageView.setOnTouchListener(new View.OnTouchListener() {
@@ -124,7 +121,7 @@ public class ReaderFragment extends Fragment {
         mPageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AppCompatActivity compatActivity = (AppCompatActivity)getActivity();
+                AppCompatActivity compatActivity = (AppCompatActivity) getActivity();
                 if (compatActivity.getSupportActionBar().isShowing()) {
                     compatActivity.getSupportActionBar().hide();
                 } else {
@@ -166,8 +163,7 @@ public class ReaderFragment extends Fragment {
             popY = wordBounds.getTop() + lineH + spaceH; //2. 下面
         }
         popY += getStatusBarHeight();
-
-        popupWindow.setAnimationStyle(R.style.Animation_AppCompat_Dialog);
+        mPopUpView.fetchWord(wordBounds.getWordSpan().getWord(),mUserId);
         popupWindow.showAtLocation(mPageView, Gravity.NO_GRAVITY, (int) popX, (int) popY);
     }
 

@@ -104,7 +104,11 @@
     <dimen name="height99">198dp</dimen>
     <dimen name="height100">200dp</dimen>
     <dimen name="height105">210dp</dimen>
+    <dimen name="height120">240dp</dimen>
+    <dimen name="height130">260dp</dimen>
+    <dimen name="height140">280dp</dimen>
     \n<!-- width -->
+    <dimen name="width0">1dp</dimen>
     <dimen name="width1">2dp</dimen>
     <dimen name="width2">4dp</dimen>
     <dimen name="width3">6dp</dimen>
@@ -205,6 +209,7 @@
     <dimen name="width98">196dp</dimen>
     <dimen name="width99">198dp</dimen>
     <dimen name="width100">200dp</dimen>
+    <dimen name="width120">240dp</dimen>
     \n<!-- textsize -->
     <dimen name="textsize1">2sp</dimen>
     <dimen name="textsize2">3sp</dimen>

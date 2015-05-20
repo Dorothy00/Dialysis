@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height140"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/padding5"
+            android:paddingLeft="@dimen/padding8"
+            android:paddingRight="@dimen/padding8"
+            android:paddingTop="@dimen/padding8"
+            >
+
+            <TextView
+                android:id="@+id/word"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:paddingBottom="@dimen/padding5"
+                android:textColor="@android:color/holo_blue_bright"
+                android:textSize="@dimen/textsize20"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/pron"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/textsize14"/>
+
+            <LinearLayout
+                android:id="@+id/word_def"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <Button
+                    android:id="@+id/delete"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/height20"
+                    android:layout_gravity="left"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:gravity="center"
+                    android:text="删除"
+                    android:textColor="@android:color/holo_blue_bright"
+                    android:textSize="@dimen/textsize16"/>
+
+
+                <Button
+                    android:id="@+id/master"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/height20"
+                    android:layout_gravity="right"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:gravity="center"
+                    android:text="已掌握"
+                    android:textColor="@android:color/holo_blue_bright"
+                    android:textSize="@dimen/textsize16"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

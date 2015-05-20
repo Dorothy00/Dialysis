@@ -17,7 +17,9 @@ import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.CloudQueryCallback;
+import com.avos.avoscloud.GetCallback;
 import com.avos.avoscloud.SignUpCallback;
+import com.reader.dialysis.util.UserCache;
 
 import test.dorothy.graduation.activity.R;
 
@@ -122,9 +124,24 @@ public class RegisterActivity extends DialysisActivity implements View.OnClickLi
                 if (e == null) {
                     showToast("注册成功！");
                     setResult(WelcomeActivity.RESULT_CODE_SUCCESS);
-                    startActivity(new Intent(RegisterActivity.this,HomeActivity.class));
+                    cacheUserInBackground(mEtUsername.getText().toString());
+                    startActivity(new Intent(RegisterActivity.this, HomeActivity.class));
                 } else {
                     showToast("注册失败！" + e.getMessage());
+                }
+            }
+        });
+    }
+
+    private void cacheUserInBackground(final String username) {
+        AVQuery<AVUser> query = new AVQuery<AVUser>("_User");
+        query.whereEqualTo("username", username);
+        query.getFirstInBackground(new GetCallback<AVUser>() {
+            @Override
+            public void done(AVUser avUser, AVException e) {
+                if (e == null) {
+                    int userId = avUser.getInt("user_id");
+                    UserCache.cacheUser(RegisterActivity.this, username, userId);
                 }
             }
         });

@@ -2,24 +2,25 @@ package com.reader.dialysis.activity;
 
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import com.avos.avoscloud.AVUser;
-import com.reader.dialysis.app.AVService;
+import com.reader.dialysis.fragment.ReadProgressFragment;
 import com.reader.dialysis.fragment.UserBookFragment;
+import com.reader.dialysis.fragment.WordsFragment;
 import com.reader.dialysis.view.DrawerView;
 
 import test.dorothy.graduation.activity.R;
 
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements DrawerView
+        .OnDrawerItemClickListener {
 
     private Toolbar toolbar;
     private DrawerView mDrawView;
@@ -35,6 +36,7 @@ public class HomeActivity extends AppCompatActivity {
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         mDrawView = (DrawerView) findViewById(R.id.drawer_view);
+        mDrawView.setOnDrawerItemClickListener(this);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string
                 .navigation_drawer_open, R.string.navigation_drawer_close) {
             @Override
@@ -51,12 +53,12 @@ public class HomeActivity extends AppCompatActivity {
         mDrawerToggle.syncState();
 
         AVUser avUser = AVUser.getCurrentUser();
-        if(avUser!=null){
+        if (avUser != null) {
             mDrawView.setUserName(avUser.getUsername());
         }
 
-      renderPanel("ds");
-      //  AVService.uploadContents(this);
+        renderPanel(DrawerView.BOOK_TAG);
+        //  AVService.uploadContents(this);
 
     }
 
@@ -66,12 +68,22 @@ public class HomeActivity extends AppCompatActivity {
         mDrawerToggle.syncState();
     }
 
-    private void renderPanel(String tag){
+    @Override
+    public void renderPanel(String tag) {
+        mDrawerLayout.closeDrawer(mDrawView);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.container, new UserBookFragment());
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
+        if (fragment == null) {
+            if (tag.equals(DrawerView.BOOK_TAG)) {
+                fragment = new UserBookFragment();
+            } else if (tag.equals(DrawerView.WORD_TAG)) {
+                fragment = new WordsFragment();
+            } else if (tag.equals(DrawerView.PROGRESS_TAG)) {
+                fragment = new ReadProgressFragment();
+            }
+        }
+        transaction.replace(R.id.container, fragment);
         transaction.commit();
     }
-
-
 }
 

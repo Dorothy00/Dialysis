@@ -11,7 +11,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.GetCallback;
+import com.reader.dialysis.util.UserCache;
 
 import test.dorothy.graduation.activity.R;
 
@@ -62,7 +65,8 @@ public class LoginActivity extends DialysisActivity implements View.OnClickListe
             if (avUser != null) {
                 showToast("登陆成功！");
                 setResult(WelcomeActivity.RESULT_CODE_SUCCESS);
-                startActivity(new Intent(this,HomeActivity.class));
+                cacheUserInBackground(mEtUsername.getText().toString());
+                startActivity(new Intent(this, HomeActivity.class));
             } else {
                 showToast("用户名或密码错误！");
                 setLoginEnable(false);
@@ -71,6 +75,20 @@ public class LoginActivity extends DialysisActivity implements View.OnClickListe
             showToast("登陆失败！");
             e.printStackTrace();
         }
+    }
+
+    private void cacheUserInBackground(final String username) {
+        AVQuery<AVUser> query = new AVQuery<AVUser>("_User");
+        query.whereEqualTo("username", username);
+        query.getFirstInBackground(new GetCallback<AVUser>() {
+            @Override
+            public void done(AVUser avUser, AVException e) {
+                if (e == null) {
+                    int userId = avUser.getInt("user_id");
+                    UserCache.cacheUser(LoginActivity.this, username, userId);
+                }
+            }
+        });
     }
 
     private void setLoginEnable(boolean isValid) {

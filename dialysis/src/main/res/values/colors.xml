@@ -7,4 +7,7 @@
     <color name="over_flow_action_bar">#33209e85</color>
     <color name="item_drawer_grey">#757575</color>
     <color name="item_drawer_blue">#1278b9</color>
+    <color name="progress_line_grey">#DDDDDE</color>
+    <color name="progress_coordinate_grey">#DADBDC</color>
+    <color name="progress_fill">#5533b5e5</color>
 </resources>
