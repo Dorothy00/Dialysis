@@ -1,9 +1,7 @@
 package com.reader.dialysis.Model;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.RectF;
 
 /**
@@ -14,7 +12,7 @@ public class WordSpan {
     private float width;
     private boolean isSelected;
 
-    public WordSpan(){
+    public WordSpan() {
 
     }
 
@@ -47,12 +45,14 @@ public class WordSpan {
     }
 
     //TODO REFACTOR
-    public void draw(Canvas canvas, Paint textPaint ,Paint bgPaint,int lineH,float xPos,float yPos){
-        if(isSelected){
+    public void draw(Canvas canvas, Paint textPaint, Paint bgPaint, int lineH, float xPos, float
+            yPos) {
+        if (isSelected) {
             Paint.FontMetrics metrics = textPaint.getFontMetrics();
-            float top = yPos + metrics.bottom -lineH;
-            canvas.drawRect(xPos,top,xPos+width,top+lineH,bgPaint);
+            float top = yPos + metrics.bottom - lineH;
+            RectF rectF = new RectF(xPos, top - 2, xPos + width, top + lineH);
+            canvas.drawRoundRect(rectF, 4, 4, bgPaint);
         }
-        canvas.drawText(word,xPos,yPos,textPaint);
+        canvas.drawText(word, xPos, yPos, textPaint);
     }
 }

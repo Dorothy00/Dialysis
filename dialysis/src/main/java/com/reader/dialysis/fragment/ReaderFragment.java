@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.PopupWindow;
 
 import com.loopj.android.http.AsyncHttpClient;
@@ -26,7 +27,7 @@ import test.dorothy.graduation.activity.R;
 /**
  * @author dorothy
  */
-public class ReaderFragment extends Fragment {
+public class ReaderFragment extends DialysisFragment {
 
     private PopupWindow popupWindow;
     private PopUpView mPopUpView;
@@ -67,6 +68,14 @@ public class ReaderFragment extends Fragment {
         popWindowWidth = (int) getResources().getDimension(R.dimen.width120);
         popWindowHeight = (int) getResources().getDimension(R.dimen.height90);
         popupWindow = new PopupWindow(mPopUpView, popWindowWidth, popWindowHeight);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        WindowManager.LayoutParams lp = getActivity().getWindow().getAttributes();
+        lp.screenBrightness = 0.5f;
+        getActivity().getWindow().setAttributes(lp);
+        super.onActivityCreated(savedInstanceState);
     }
 
     @Override

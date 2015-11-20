@@ -55,7 +55,8 @@ public class ReadProgressView extends View {
     private Paint mFillPaint;
     private Paint mCirclePaint;
 
-    private List<AVReadTime> mAvRedTimeList = new ArrayList<>();
+  //  private List<AVReadTime> mAvRedTimeList = new ArrayList<>();
+    private List<Long> mReadTimeList = new ArrayList<>();
     private List<Long> mOrdinateValues = new ArrayList<>();
     private List<Point> mLinePoints = new ArrayList<>();
 
@@ -208,20 +209,20 @@ public class ReadProgressView extends View {
     }
 
     private void drawOrdinate(Canvas canvas) {
-        Collections.sort(mAvRedTimeList, new Comparator<AVReadTime>() {
+        Collections.sort(mReadTimeList, new Comparator<Long>() {
             @Override
-            public int compare(AVReadTime lhs, AVReadTime rhs) {
-                return lhs.getReadTime() > rhs.getReadTime() ? 1 : -1;
+            public int compare(Long lhs, Long rhs) {
+                return lhs-rhs>0?1:-1;
             }
         });
-        if (mAvRedTimeList.size() == 0) {
-            for (int i = 0; i < 7; i++) {
-                mAvRedTimeList.add(new AVReadTime());
+        if (mReadTimeList.size() < 7) {
+            for (int i = 0; i < 7-mReadTimeList.size(); i++) {
+                mReadTimeList.add(0,0L);
             }
         }
 
-        long maxTime = mAvRedTimeList.get(0).getReadTime();
-        long minTime = mAvRedTimeList.get(mAvRedTimeList.size() - 1).getReadTime();
+        long maxTime = mReadTimeList.get(0);
+        long minTime = mReadTimeList.get(mReadTimeList.size() - 1);
         long timeDis = (maxTime - minTime) / (LINE_VERTICAL - 2);
         long curTime = minTime;
         mOrdinateValues.clear();
@@ -241,8 +242,8 @@ public class ReadProgressView extends View {
 
     private void drawPath(Canvas canvas) {
         Path linePath = new Path();
-        long minTime = mAvRedTimeList.get(0).getReadTime();
-        long maxTime = mAvRedTimeList.get(mAvRedTimeList.size() - 1).getReadTime();
+        long minTime = mReadTimeList.get(0);
+        long maxTime = mReadTimeList.get(mReadTimeList.size() - 1);
         long timeTotalDis = maxTime - minTime;
         if (timeTotalDis <= 0) {
             return;
@@ -251,7 +252,7 @@ public class ReadProgressView extends View {
         for (int i = 0; i < LINE_VERTICAL; i++) {
             Point point = new Point();
             float x = mVerticalStartPoint.x + i * CELL_WIDTH;
-            long time = mAvRedTimeList.get(i).getReadTime();
+            long time = mReadTimeList.get(i);
             float y = VERTICAL_LINE_HEIGHT - ((time - minTime) * coordinateLength) /
                     timeTotalDis - CELL_HEIGHT;
             point.set((int) x, (int) y);
@@ -264,7 +265,6 @@ public class ReadProgressView extends View {
         }
 
         canvas.drawPath(linePath, mPathPaint);
-
     }
 
     private void drawFill(Canvas canvas) {
@@ -294,8 +294,13 @@ public class ReadProgressView extends View {
     }
 
     public void setReadTime(List<AVReadTime> avReadTimeList) {
-        mAvRedTimeList.clear();
-        mAvRedTimeList.addAll(avReadTimeList);
+        mReadTimeList.clear();
+        for(AVReadTime avReadTime: avReadTimeList){
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(avReadTime.getDate("read_date"));
+            d("day " + calendar.get(Calendar.DAY_OF_WEEK) + " time "  + avReadTime.getReadTime());
+            mReadTimeList.add(avReadTime.getReadTime());
+        }
         invalidate();
     }
 

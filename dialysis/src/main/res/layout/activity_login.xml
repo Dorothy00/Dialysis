@@ -1,65 +1,70 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
-    android:paddingLeft="@dimen/padding20"
-    android:paddingRight="@dimen/padding20"
-    android:paddingTop="@dimen/padding80"
-    tools:context="test.dorothy.graduation.activity.LoginActivity">
+    android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/username"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/height23"
-        android:hint="用户名"
-        android:textColorHint="@android:color/white" />
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:paddingLeft="@dimen/padding20"
+        android:paddingRight="@dimen/padding20"
+        android:paddingTop="@dimen/padding80"
+        >
 
-    <EditText
-        android:id="@+id/password"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/height23"
-        android:layout_marginTop="@dimen/margin10"
-        android:hint="密码"
-        android:password="true"
-        android:textColorHint="@android:color/white" />
+        <EditText
+            android:id="@+id/username"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height23"
+            android:background="@drawable/selector_edittext"
+            android:hint="用户名"
+            android:maxLength="12"
+            android:textColorHint="@android:color/white"/>
 
-    <Button
-        android:id="@+id/login"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/height23"
-        android:layout_marginTop="@dimen/margin15"
-        android:background="@color/disabled_common_green"
-        android:enabled="false"
-        android:text="登 陆"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/textsize18" />
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height23"
+            android:layout_below="@+id/username"
+            android:layout_marginTop="@dimen/margin10"
+            android:background="@drawable/selector_edittext"
+            android:hint="密码"
+            android:password="true"
+            android:textColorHint="@android:color/white"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="@dimen/margin15"
-        android:gravity="center_horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/password"
+            android:layout_marginTop="@dimen/margin15"
+            android:layout_toLeftOf="@+id/register"
             android:text="还没有账号？"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/textsize18" />
+            android:textColor="#bdbdbb"
+            android:textSize="@dimen/textsize18"/>
 
         <TextView
             android:id="@+id/register"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="注册"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/password"
             android:layout_marginLeft="@dimen/margin10"
-            android:textColor="@color/common_green"
-            android:textSize="@dimen/textsize18" />
-    </LinearLayout>
+            android:layout_marginTop="@dimen/margin15"
+            android:text="注册"
+            android:textColor="@android:color/holo_blue_light"
+            android:textSize="@dimen/textsize18"/>
 
-
-</LinearLayout>
-
+        <Button
+            android:id="@+id/login"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height23"
+            android:layout_below="@+id/register"
+            android:layout_marginTop="@dimen/margin15"
+            android:background="@android:color/holo_blue_light"
+            android:enabled="false"
+            android:text="登 陆"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/textsize18"/>
+    </RelativeLayout>
+</ScrollView>

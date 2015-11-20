@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVObject;
+import com.reader.dialysis.Model.AVBook;
 import com.reader.dialysis.Model.AVChapter;
 import com.reader.dialysis.Model.AVReadTime;
 import com.reader.dialysis.Model.AVTableContents;
@@ -21,6 +22,7 @@ public class DialysisApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        AVObject.registerSubclass(AVBook.class);
         AVObject.registerSubclass(AVUserBook.class);
         AVObject.registerSubclass(AVTableContents.class);
         AVObject.registerSubclass(AVChapter.class);

@@ -2,12 +2,12 @@
 <android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+   android:descendantFocusability="blocksDescendants">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/height105"
-        android:gravity="center_horizontal"
         android:orientation="vertical">
 
         <ImageView
@@ -17,10 +17,22 @@
             android:scaleType="fitXY"
             />
 
+        <ImageButton
+            android:id="@+id/delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="@dimen/margin2"
+            android:layout_marginTop="@dimen/margin2"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_action_white"/>
+
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/book_cover"
             android:layout_marginTop="@dimen/margin3"
             android:gravity="center"
             android:maxLines="2"
@@ -32,11 +44,12 @@
             android:id="@+id/author"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/title"
             android:layout_marginTop="@dimen/margin3"
             android:gravity="center"
             android:maxLines="2"
             android:text="author"
             android:textSize="@dimen/textsize10"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 </android.support.v7.widget.CardView>

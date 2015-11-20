@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/padding6"
+                android:paddingTop="@dimen/padding6">
+
+    <ImageView
+        android:id="@+id/book_cover"
+        android:layout_width="@dimen/width40"
+        android:layout_height="@dimen/height60"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="@dimen/margin10"
+        android:scaleType="fitXY"/>
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin8"
+        android:layout_toLeftOf="@+id/collect"
+        android:layout_toRightOf="@+id/book_cover"
+        android:textColor="@color/book_title"
+        android:textSize="@dimen/textsize16"/>
+
+    <TextView
+        android:id="@+id/author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/title"
+        android:layout_marginLeft="@dimen/margin8"
+        android:layout_toLeftOf="@+id/collect"
+        android:layout_toRightOf="@+id/book_cover"
+        android:textColor="@color/hint_color"
+        android:textSize="@dimen/textsize14"/>
+
+    <Button
+        android:id="@+id/collect"
+        android:layout_width="@dimen/width25"
+        android:layout_height="@dimen/height14"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/margin10"
+        android:background="@android:color/holo_blue_bright"
+        android:gravity="center"
+        android:text="收藏"
+        android:textColor="@android:color/white"/>
+</RelativeLayout>

@@ -13,6 +13,19 @@
         android:icon="@drawable/ic_text_format_grey600_36dp"
         android:orderInCategory="100"
         android:title="显示选项"
-        compat:showAsAction="always"/>
+        compat:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/big"
+                android:title="大号"/>
+            <item
+                android:id="@+id/medium"
+                android:title="中号"/>
+            <item
+                android:id="@+id/small"
+                android:title="小号"/>
+        </menu>
+
+    </item>
 
 </menu>

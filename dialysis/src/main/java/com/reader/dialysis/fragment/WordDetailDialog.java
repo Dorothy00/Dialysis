@@ -2,7 +2,6 @@ package com.reader.dialysis.fragment;
 
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -20,8 +19,6 @@ import android.widget.TextView;
 
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
-import com.avos.avoscloud.DeleteCallback;
-import com.avos.avoscloud.SaveCallback;
 import com.reader.dialysis.Model.AVWord;
 import com.reader.dialysis.Model.Word;
 import com.reader.dialysis.util.JsonUtil;
@@ -44,6 +41,13 @@ public class WordDetailDialog extends DialogFragment implements View.OnClickList
     private Button mBtnDelete;
     private Button mBtnMaster;
     private LinearLayout mDefContainer;
+    private WordCallBack mCallBack;
+
+    public interface WordCallBack {
+        void deleteWord(int index);
+
+        void masterWord(int index);
+    }
 
     public static WordDetailDialog newInstance(Word word, int index, String objId) {
         WordDetailDialog dialog = new WordDetailDialog();
@@ -131,44 +135,27 @@ public class WordDetailDialog extends DialogFragment implements View.OnClickList
             return;
         }
         if (v.getId() == R.id.delete) {
-            deleteWord(mAvWord);
+            deleteWord();
         } else if (v.getId() == R.id.master) {
-            masterWord(mAvWord);
+            masterWord();
         }
     }
 
-    private void deleteWord(AVObject avObject) {
-        avObject.deleteInBackground(new DeleteCallback() {
-            @Override
-            public void done(AVException e) {
-                if (e == null) {
-                    Intent intent = getActivity().getIntent();
-                    intent.putExtra("index", mIndex);
-                    getTargetFragment().onActivityResult
-                            (WordsFragment.REQUEST_CODE_DIALOG,
-                                    WordsFragment.RESULT_CODE_DIALOG,
-                                    intent);
-                    getDialog().dismiss();
-                }
-            }
-        });
+    private void deleteWord() {
+        if (mCallBack != null) {
+            mCallBack.deleteWord(mIndex);
+        }
+        getDialog().dismiss();
     }
 
-    private void masterWord(AVObject avObject) {
-        avObject.put("master", true);
-        avObject.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(AVException e) {
-                if (e == null) {
-                    Intent intent = getActivity().getIntent();
-                    intent.putExtra("index", mIndex);
-                    getTargetFragment().onActivityResult
-                            (WordsFragment.REQUEST_CODE_DIALOG,
-                                    WordsFragment.RESULT_CODE_DIALOG,
-                                    intent);
-                    getDialog().dismiss();
-                }
-            }
-        });
+    private void masterWord() {
+        if (mCallBack != null) {
+            mCallBack.masterWord(mIndex);
+        }
+        getDialog().dismiss();
+    }
+
+    public void setWordCallBack(WordCallBack wordCallBack) {
+        mCallBack = wordCallBack;
     }
 }

@@ -1,0 +1,19 @@
+<com.reader.dialysis.view.IndicatorWrapper
+    android:id="@+id/indicator_wrapper"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:drawable="@drawable/ic_spinner">
+
+
+    <ListView
+        android:id="@+id/all_book"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:scrollbarStyle="outsideOverlay"/>
+
+
+</com.reader.dialysis.view.IndicatorWrapper>

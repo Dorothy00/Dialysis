@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="disabled_common_green">#88209e85</color>
     <color name="common_green">#209e85</color>
     <color name="colorPrimary">#FF5722</color>
     <color name="colorPrimaryDark">#E64A19</color>
@@ -10,4 +9,7 @@
     <color name="progress_line_grey">#DDDDDE</color>
     <color name="progress_coordinate_grey">#DADBDC</color>
     <color name="progress_fill">#5533b5e5</color>
+    <color name="disabled_common_blue">#8833b5e5</color>
+    <color name="hint_color">#bdbdbb</color>
+    <color name="book_title">#989793</color>
 </resources>

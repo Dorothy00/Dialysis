@@ -1,6 +1,7 @@
 package com.reader.dialysis.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +29,7 @@ public class ContentAdapter extends BaseAdapter {
         mContext = context;
     }
 
-    public void setData(List<Content> contentList,int selectedChapterId) {
+    public void setData(List<Content> contentList, int selectedChapterId) {
         mContentList.clear();
         if (contentList != null) {
             mContentList.addAll(contentList);
@@ -69,8 +70,9 @@ public class ContentAdapter extends BaseAdapter {
         Content content = getItem(position);
         if (content != null) {
             holder.tvContent.setText(content.getTitle());
-            if(content.getChapterId()==mSelectedChapterId){
-                holder.tvContent.setTextColor(mContext.getResources().getColor(R.color.common_green));
+            if (content.getChapterId() == mSelectedChapterId) {
+                holder.tvContent.setTextColor(Resources.getSystem().getColor(android.R.color
+                        .holo_blue_light));
             } else {
                 holder.tvContent.setTextColor(Color.BLACK);
             }

@@ -12,13 +12,14 @@
     <style name="CustomActionBarTheme"
            parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <item name="actionBarStyle">@style/MyActionBar</item>
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 
     <!-- ActionBar styles -->
     <style name="MyActionBar"
            parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="background">@color/over_flow_action_bar</item>
-        <item name="windowActionBarOverlay">true</item>
+        <item name="background">@android:color/holo_blue_light</item>
+
     </style>
 
 </resources>

@@ -1,5 +1,6 @@
 package com.reader.dialysis.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
@@ -11,9 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.avos.avoscloud.AVUser;
-import com.reader.dialysis.fragment.ReadProgressFragment;
 import com.reader.dialysis.fragment.UserBookFragment;
-import com.reader.dialysis.fragment.WordsFragment;
 import com.reader.dialysis.view.DrawerView;
 
 import test.dorothy.graduation.activity.R;
@@ -21,6 +20,9 @@ import test.dorothy.graduation.activity.R;
 
 public class HomeActivity extends AppCompatActivity implements DrawerView
         .OnDrawerItemClickListener {
+
+    public static final int REQUEST_CODE_HOME = 0x11;
+    public static final int RESULT_CODE_HOME = 0x22;
 
     private Toolbar toolbar;
     private DrawerView mDrawView;
@@ -33,7 +35,6 @@ public class HomeActivity extends AppCompatActivity implements DrawerView
         setContentView(R.layout.activity_home);
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
-
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         mDrawView = (DrawerView) findViewById(R.id.drawer_view);
         mDrawView.setOnDrawerItemClickListener(this);
@@ -58,7 +59,7 @@ public class HomeActivity extends AppCompatActivity implements DrawerView
         }
 
         renderPanel(DrawerView.BOOK_TAG);
-        //  AVService.uploadContents(this);
+        //AVService.uploadData(this);
 
     }
 
@@ -70,20 +71,26 @@ public class HomeActivity extends AppCompatActivity implements DrawerView
 
     @Override
     public void renderPanel(String tag) {
-        mDrawerLayout.closeDrawer(mDrawView);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
-        if (fragment == null) {
-            if (tag.equals(DrawerView.BOOK_TAG)) {
-                fragment = new UserBookFragment();
-            } else if (tag.equals(DrawerView.WORD_TAG)) {
-                fragment = new WordsFragment();
-            } else if (tag.equals(DrawerView.PROGRESS_TAG)) {
-                fragment = new ReadProgressFragment();
-            }
+        if (fragment == null && tag.equals(DrawerView.BOOK_TAG)) {
+            fragment = new UserBookFragment();
         }
         transaction.replace(R.id.container, fragment);
         transaction.commit();
+    }
+
+    @Override
+    public void closeDrawer() {
+        mDrawerLayout.closeDrawer(mDrawView);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_HOME && resultCode == RESULT_CODE_HOME) {
+            finish();
+        }
     }
 }
 

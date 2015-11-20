@@ -14,6 +14,7 @@ import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.GetCallback;
+import com.avos.avoscloud.LogInCallback;
 import com.reader.dialysis.util.UserCache;
 
 import test.dorothy.graduation.activity.R;
@@ -35,6 +36,7 @@ public class LoginActivity extends DialysisActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mEtUsername = (EditText) findViewById(R.id.username);
         mEtPassword = (EditText) findViewById(R.id.password);
@@ -43,6 +45,9 @@ public class LoginActivity extends DialysisActivity implements View.OnClickListe
         mBtnLogin.setOnClickListener(this);
         mTvRegister.setOnClickListener(this);
 
+        mEtUsername.setHintTextColor(getResources().getColor(R.color.hint_color));
+        mEtPassword.setHintTextColor(getResources().getColor(R.color.hint_color));
+
         mEtUsername.addTextChangedListener(mTextWatcher);
         mEtPassword.addTextChangedListener(mTextWatcher);
     }
@@ -50,7 +55,7 @@ public class LoginActivity extends DialysisActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.login) {
-            doLogin();
+            doLoginInBackground();
         } else if (v.getId() == R.id.register) {
             startActivityForResult(new Intent(this, RegisterActivity.class), WelcomeActivity
                     .REQUEST_CODE_REGISTER);
@@ -58,23 +63,28 @@ public class LoginActivity extends DialysisActivity implements View.OnClickListe
 
     }
 
-    private void doLogin() {
-        try {
-            AVUser avUser = AVUser.logIn(mEtUsername.getText().toString(), mEtPassword.getText()
-                    .toString());
-            if (avUser != null) {
-                showToast("登陆成功！");
-                setResult(WelcomeActivity.RESULT_CODE_SUCCESS);
-                cacheUserInBackground(mEtUsername.getText().toString());
-                startActivity(new Intent(this, HomeActivity.class));
-            } else {
-                showToast("用户名或密码错误！");
-                setLoginEnable(false);
+    private void doLoginInBackground() {
+        AVUser.logInInBackground(mEtUsername.getText().toString(), mEtPassword.getText()
+                .toString(), new LogInCallback<AVUser>() {
+            @Override
+            public void done(AVUser avUser, AVException e) {
+                if (e == null) {
+                    if (avUser != null) {
+                        showToast("登陆成功！");
+                        setResult(WelcomeActivity.RESULT_CODE_SUCCESS);
+                        cacheUserInBackground(mEtUsername.getText().toString());
+                        startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+                        finish();
+                    } else {
+                        showToast("用户名或密码错误！");
+                        setLoginEnable(false);
+                    }
+                } else {
+                    showToast("登陆失败！" + e.getMessage());
+                    e.printStackTrace();
+                }
             }
-        } catch (AVException e) {
-            showToast("登陆失败！");
-            e.printStackTrace();
-        }
+        });
     }
 
     private void cacheUserInBackground(final String username) {
@@ -92,9 +102,9 @@ public class LoginActivity extends DialysisActivity implements View.OnClickListe
     }
 
     private void setLoginEnable(boolean isValid) {
-        int colorResId = R.color.disabled_common_green;
+        int colorResId = R.color.disabled_common_blue;
         if (isValid) {
-            colorResId = R.color.common_green;
+            colorResId = android.R.color.holo_blue_light;
         }
         mBtnLogin.setBackgroundResource(colorResId);
         mBtnLogin.setEnabled(isValid);
@@ -113,7 +123,7 @@ public class LoginActivity extends DialysisActivity implements View.OnClickListe
 
         @Override
         public void afterTextChanged(Editable s) {
-            boolean isValid = TextUtils.isEmpty(mEtUsername.getText()) || TextUtils.isEmpty
+            boolean isValid = !TextUtils.isEmpty(mEtUsername.getText()) && !TextUtils.isEmpty
                     (mEtPassword.getText());
             setLoginEnable(isValid);
         }

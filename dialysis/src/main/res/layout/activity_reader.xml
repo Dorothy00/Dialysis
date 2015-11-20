@@ -6,11 +6,23 @@
     android:layout_height="match_parent"
     app:drawable="@drawable/ic_spinner">
 
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/view_pager"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </android.support.v4.view.ViewPager>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </android.support.v4.view.ViewPager>
+
+        <TextView
+            android:id="@+id/page"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height20"
+            android:gravity="center_horizontal"
+            android:textSize="@dimen/textsize14"/>
+    </LinearLayout>
 </com.reader.dialysis.view.IndicatorWrapper>
 

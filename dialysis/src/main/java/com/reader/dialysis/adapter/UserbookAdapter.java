@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,13 +21,20 @@ import test.dorothy.graduation.activity.R;
 /**
  * Created by dorothy on 15/5/8.
  */
-public class UserbookAdapter extends BaseAdapter {
+public class UserbookAdapter extends BaseAdapter implements View.OnClickListener {
 
     private Context mContext;
-    private List<AVUserBook> mAVUserBookList = new ArrayList<AVUserBook>();
+    private List<AVUserBook> mAVUserBookList = new ArrayList<>();
+    private DeleteUserBookCallBack mCallBack;
 
-    public UserbookAdapter(Context context) {
+    public interface DeleteUserBookCallBack {
+        void delete(int pos);
+    }
+
+    public UserbookAdapter(Context context, DeleteUserBookCallBack callBack
+    ) {
         this.mContext = context;
+        mCallBack = callBack;
     }
 
     public void setData(List<AVUserBook> AVUserBookList) {
@@ -64,6 +72,7 @@ public class UserbookAdapter extends BaseAdapter {
             holder.ivCover = (ImageView) convertView.findViewById(R.id.book_cover);
             holder.tvTitle = (TextView) convertView.findViewById(R.id.title);
             holder.tvAuthor = (TextView) convertView.findViewById(R.id.author);
+            holder.ivDelete = (ImageButton) convertView.findViewById(R.id.delete);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -75,12 +84,25 @@ public class UserbookAdapter extends BaseAdapter {
             AVFile avFile = AVUserBook.getCoverUrl();
             String url = avFile.getUrl();
             Picasso.with(mContext).load(url).into(holder.ivCover);
+            holder.ivDelete.setTag(position);
+            holder.ivDelete.setOnClickListener(this);
         }
         return convertView;
     }
 
+    @Override
+    public void onClick(View v) {
+        if (mCallBack == null || !(v.getTag() instanceof Integer)) {
+            return;
+        }
+
+        int pos = (Integer) v.getTag();
+        mCallBack.delete(pos);
+    }
+
     private class ViewHolder {
         ImageView ivCover;
+        ImageButton ivDelete;
         TextView tvTitle;
         TextView tvAuthor;
     }

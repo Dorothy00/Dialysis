@@ -41,12 +41,18 @@ public class RegisterActivity extends DialysisActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mEtUsername = (EditText) findViewById(R.id.username);
         mEtEmail = (EditText) findViewById(R.id.email);
         mEtPassword = (EditText) findViewById(R.id.password);
         mEtConfirmPassword = (EditText) findViewById(R.id.confirm_password);
         mBtnRegister = (Button) findViewById(R.id.register);
+
+        mEtUsername.setHintTextColor(getResources().getColor(R.color.hint_color));
+        mEtEmail.setHintTextColor(getResources().getColor(R.color.hint_color));
+        mEtPassword.setHintTextColor(getResources().getColor(R.color.hint_color));
+        mEtConfirmPassword.setHintTextColor(getResources().getColor(R.color.hint_color));
 
         mEtUsername.addTextChangedListener(mTextChangeWatcher);
         mEtEmail.addTextChangedListener(mTextChangeWatcher);
@@ -191,9 +197,9 @@ public class RegisterActivity extends DialysisActivity implements View.OnClickLi
         public void afterTextChanged(Editable s) {
             boolean isValid = isRegisterInfoEmpty();
 
-            int colorResId = R.color.disabled_common_green;
+            int colorResId = R.color.disabled_common_blue;
             if (isValid) {
-                colorResId = R.color.common_green;
+                colorResId = android.R.color.holo_blue_light;
             }
             mBtnRegister.setBackgroundResource(colorResId);
             mBtnRegister.setEnabled(isValid);

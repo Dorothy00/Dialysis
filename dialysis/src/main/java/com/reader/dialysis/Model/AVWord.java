@@ -3,7 +3,6 @@ package com.reader.dialysis.Model;
 import com.alibaba.fastjson.JSON;
 import com.avos.avoscloud.AVClassName;
 import com.avos.avoscloud.AVObject;
-import com.avos.avoscloud.AVUser;
 import com.reader.dialysis.util.JsonUtil;
 
 /**
@@ -21,7 +20,7 @@ public class AVWord extends AVObject {
     public AVWord(int userId, Word word) {
         String jsonStr = JSON.toJSONString(word);
         put("word_obj", jsonStr);
-        put("word",word.getWord());
+        put("word", word.getWord());
         put("user_id", userId);
     }
 
@@ -30,15 +29,19 @@ public class AVWord extends AVObject {
         return JsonUtil.createModel(jsonStr, Word.class);
     }
 
-    public String getWord(){
+    public String getWord() {
         return getString("word");
     }
 
-    public boolean isMaster(){
+    public boolean isMaster() {
         return getBoolean("master");
     }
 
     public void setWord(Word word) {
         this.word = word;
+    }
+
+    public void setMaster(boolean isMaster) {
+        put("master", isMaster);
     }
 }

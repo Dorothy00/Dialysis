@@ -29,4 +29,13 @@ public class UserCache {
                 .MODE_PRIVATE);
         return sharedPref.getInt("user_id", 0);
     }
+
+    public static void clear(Context context){
+        SharedPreferences sharedPref = context.getSharedPreferences(USER_PREFERENCE, Context
+                .MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.remove("username");
+        editor.remove("user_id");
+        editor.commit();
+    }
 }

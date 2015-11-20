@@ -7,6 +7,10 @@
     app:drawable="@drawable/ic_spinner"
     android:padding="@dimen/padding10">
 
+    <RelativeLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+
     <GridView
         android:id="@+id/userbook_grid"
         android:layout_width="match_parent"
@@ -17,4 +21,12 @@
         android:horizontalSpacing="@dimen/width7"
         android:numColumns="3"/>
 
+        <ImageView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:id="@+id/add_book"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            android:src="@drawable/ic_add_circle_blue"/>
+</RelativeLayout>
 </com.reader.dialysis.view.IndicatorWrapper>

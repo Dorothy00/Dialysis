@@ -1,8 +1,9 @@
-package com.reader.dialysis.fragment;
+package com.reader.dialysis.activity;
 
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.FindCallback;
 import com.reader.dialysis.Model.AVReadTime;
 import com.reader.dialysis.Model.AVWord;
+import com.reader.dialysis.activity.DialysisActivity;
 import com.reader.dialysis.util.UserCache;
 import com.reader.dialysis.view.IndicatorWrapper;
 import com.reader.dialysis.view.ReadProgressView;
@@ -23,10 +25,8 @@ import java.util.List;
 
 import test.dorothy.graduation.activity.R;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class ReadProgressFragment extends DialysisFragment {
+
+public class ReadProgressActivity extends DialysisActivity {
 
     private TextView mTvTotalReadingTime;
     private TextView mTvActiveWords;
@@ -34,25 +34,19 @@ public class ReadProgressFragment extends DialysisFragment {
     private ReadProgressView mProgressView;
     private IndicatorWrapper mIndicatorWrapper;
 
-    public ReadProgressFragment() {
-    }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_read_progress, container, false);
-        mProgressView = (ReadProgressView) rootView.findViewById(R.id.progress_view);
-        mTvTotalReadingTime = (TextView) rootView.findViewById(R.id.total_reading_time);
-        mTvActiveWords = (TextView) rootView.findViewById(R.id.word_active);
-        mTvMasterWords = (TextView) rootView.findViewById(R.id.word_master);
-        mIndicatorWrapper = (IndicatorWrapper) rootView.findViewById(R.id.indicator_wrapper);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.fragment_read_progress);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setElevation(0);
+        mProgressView = (ReadProgressView) findViewById(R.id.progress_view);
+        mTvTotalReadingTime = (TextView) findViewById(R.id.total_reading_time);
+        mTvActiveWords = (TextView) findViewById(R.id.word_active);
+        mTvMasterWords = (TextView) findViewById(R.id.word_master);
+        mIndicatorWrapper = (IndicatorWrapper)findViewById(R.id.indicator_wrapper);
 
-        return rootView;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
         fetchReadTime();
     }
 
@@ -65,6 +59,7 @@ public class ReadProgressFragment extends DialysisFragment {
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         Date minDate = calendar.getTime();
+        avQuery.whereEqualTo("user_id",UserCache.getUserId(this));
         avQuery.whereLessThan("read_date", maxDate);
         avQuery.whereGreaterThan("read_date", minDate);
         showIndicator();
@@ -78,11 +73,10 @@ public class ReadProgressFragment extends DialysisFragment {
                 fetchTotalReadTime();
             }
         });
-
     }
 
     private void fetchTotalReadTime() {
-        int userId = UserCache.getUserId(getActivity());
+        int userId = UserCache.getUserId(this);
         AVQuery<AVReadTime> query = new AVQuery<>("ReadTime");
         query.whereEqualTo("user_id", userId);
         query.findInBackground(new FindCallback<AVReadTime>() {
@@ -102,7 +96,7 @@ public class ReadProgressFragment extends DialysisFragment {
     }
 
     private void fetchTotalActiveWords() {
-        int userId = UserCache.getUserId(getActivity());
+        int userId = UserCache.getUserId(this);
         AVQuery<AVWord> query = new AVQuery<>("Word");
         query.whereEqualTo("user_id", userId);
         query.findInBackground(new FindCallback<AVWord>() {

@@ -2,6 +2,7 @@ package com.reader.dialysis.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,12 +11,13 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.view.WindowCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.avos.avoscloud.AVCloudQueryResult;
@@ -52,7 +54,7 @@ import java.util.List;
 
 import test.dorothy.graduation.activity.R;
 
-public class ReaderActivity extends AppCompatActivity implements OnPageChangeListener {
+public class ReaderActivity extends DialysisActivity implements OnPageChangeListener {
 
     public static final int REQUEST_CODE_CONTENTS = 0x33;
     public static final int RESULT_CODE_CONTENTS = 0x34;
@@ -60,22 +62,28 @@ public class ReaderActivity extends AppCompatActivity implements OnPageChangeLis
     private IndicatorWrapper mIndicatorWrapper;
     private ViewPager mReaderViewPager;
     private ReaderPagerAdapter mReaderPagerAdapter;
+    private TextView mTvPage;
     private List<PageSpan> mPageList;
     private int mBookId;
     private int mChapterId;
     private int userId;
+    private PaintInfo mPaintInfo;
+    private Chapter mChapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_reader);
 
         mIndicatorWrapper = (IndicatorWrapper) findViewById(R.id.indicator_wrapper);
         mReaderViewPager = (ViewPager) findViewById(R.id.view_pager);
+        mTvPage = (TextView) findViewById(R.id.page);
         mReaderPagerAdapter = new ReaderPagerAdapter
                 (getSupportFragmentManager());
+        mReaderViewPager.setOnPageChangeListener(this);
         mTimeHelper = new TimeHelper();
         mBookId = getIntent().getIntExtra("book_id", -1);
         mChapterId = getIntent().getIntExtra("chapter_id", -1);
@@ -83,7 +91,9 @@ public class ReaderActivity extends AppCompatActivity implements OnPageChangeLis
             return;
         }
         userId = UserCache.getUserId(this);
+
         MiscUtil.forceShowOverLap(this);
+        initPaintInfo();
         fetchChapter();
     }
 
@@ -96,8 +106,22 @@ public class ReaderActivity extends AppCompatActivity implements OnPageChangeLis
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.content_list) {
-            fetchTableContents(mBookId);
+        switch (item.getItemId()) {
+            case R.id.content_list:
+                fetchTableContents(mBookId);
+                break;
+            case R.id.big:
+                float textsizeBig = getResources().getDimension(R.dimen.textsize22);
+                setPaintInfo(textsizeBig);
+                break;
+            case R.id.medium:
+                float textsizeMedium = getResources().getDimension(R.dimen.textsize16);
+                setPaintInfo(textsizeMedium);
+                break;
+            case R.id.small:
+                float textsizeSmall = getResources().getDimension(R.dimen.textsize12);
+                setPaintInfo(textsizeSmall);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -141,10 +165,10 @@ public class ReaderActivity extends AppCompatActivity implements OnPageChangeLis
         }
     }
 
-    private PaintInfo setPaintInfo() {
+    private void initPaintInfo() {
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         int width = metrics.widthPixels;
-        int height = metrics.heightPixels;
+        int height = metrics.heightPixels - mTvPage.getHeight();
 
 
         int result = 0;
@@ -152,21 +176,27 @@ public class ReaderActivity extends AppCompatActivity implements OnPageChangeLis
         if (resourceId > 0) {
             result = getResources().getDimensionPixelSize(resourceId);
         }
+        mPaintInfo = new PaintInfo();
+        mPaintInfo.setScreenW(width);
+        mPaintInfo.setScreenH(height - result);
+        mPaintInfo.setSpaceH((int) getResources().getDimension(R.dimen.height8));
+        mPaintInfo.setSpaceW((int) getResources().getDimension(R.dimen.width4));
+        mPaintInfo.setPaddingTop((int) getResources().getDimension(R.dimen.padding10));
+        mPaintInfo.setPaddingBottom((int) getResources().getDimension(R.dimen.padding10));
+        mPaintInfo.setPaddingLeft((int) getResources().getDimension(R.dimen.padding5));
+        mPaintInfo.setPaddingRight((int) getResources().getDimension(R.dimen.padding5));
+        mPaintInfo.setTextSize(getResources().getDimension(R.dimen.textsize16));
+        mPaintInfo.setForegroundColor(Color.BLACK);
+        mPaintInfo.setBackgroundColor(Resources.getSystem().getColor(android.R.color
+                .holo_blue_light));
 
-        PaintInfo paintInfo = new PaintInfo();
-        paintInfo.setScreenW(width);
-        paintInfo.setScreenH(height - result);
-        paintInfo.setSpaceH((int) getResources().getDimension(R.dimen.height8));
-        paintInfo.setSpaceW((int) getResources().getDimension(R.dimen.width4));
-        paintInfo.setPaddingTop((int) getResources().getDimension(R.dimen.padding10));
-        paintInfo.setPaddingBottom((int) getResources().getDimension(R.dimen.padding10));
-        paintInfo.setPaddingLeft((int) getResources().getDimension(R.dimen.padding5));
-        paintInfo.setPaddingRight((int) getResources().getDimension(R.dimen.padding5));
-        paintInfo.setTextSize(getResources().getDimension(R.dimen.textsize16));
-        paintInfo.setForegroundColor(Color.BLACK);
-        paintInfo.setBackgroundColor(Color.RED);
+    }
 
-        return paintInfo;
+    private void setPaintInfo(float textsize) {
+        mPaintInfo.setTextSize(textsize);
+        mPageList = new DialysisSpanGenerator().setupPage(mChapter,
+                mPaintInfo);
+        mReaderPagerAdapter.notifyDataSetChanged();
     }
 
     private void fetchChapter() {
@@ -205,9 +235,9 @@ public class ReaderActivity extends AppCompatActivity implements OnPageChangeLis
                     if (TextUtils.isEmpty(contentXml)) {
                         return;
                     }
-                    Chapter chapter = new DialysisXmlParser().parser(contentXml);
-                    mPageList = new DialysisSpanGenerator().setupPage(chapter,
-                            setPaintInfo());
+                    mChapter = new DialysisXmlParser().parser(contentXml);
+                    mPageList = new DialysisSpanGenerator().setupPage(mChapter,
+                            mPaintInfo);
                     if (mReaderViewPager.getAdapter() == null) {
                         mReaderViewPager.setAdapter(mReaderPagerAdapter);
                     } else {
@@ -302,11 +332,15 @@ public class ReaderActivity extends AppCompatActivity implements OnPageChangeLis
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+        if (mTvPage != null && mPageList != null) {
+            mTvPage.setText(position + "/" + mPageList.size());
+        }
+        Log.d("------", "------- + onPageScrolled");
     }
 
     @Override
     public void onPageSelected(int position) {
+        Log.d("------", "------- + onPageSelected");
 
     }
 

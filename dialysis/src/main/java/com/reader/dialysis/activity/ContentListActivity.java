@@ -16,7 +16,7 @@ import java.util.List;
 
 import test.dorothy.graduation.activity.R;
 
-public class ContentListActivity extends AppCompatActivity implements AdapterView
+public class ContentListActivity extends DialysisActivity implements AdapterView
         .OnItemClickListener {
 
     private List<Content> mContentList;
@@ -27,6 +27,7 @@ public class ContentListActivity extends AppCompatActivity implements AdapterVie
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_content_list);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mContentListView = (ListView) findViewById(R.id.listview);
         int chapterId = getIntent().getIntExtra("chapter_id", -1);

@@ -13,6 +13,7 @@ import com.avos.avoscloud.SaveCallback;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
+import com.reader.dialysis.Model.AVBook;
 import com.reader.dialysis.Model.AVChapter;
 import com.reader.dialysis.Model.AVTableContents;
 import com.reader.dialysis.Model.AVUserBook;
@@ -52,7 +53,7 @@ public class AVService {
     public static void uploadData(final Context context) {
         AssetManager assetManager = context.getAssets();
         try {
-            InputStream is = assetManager.open("The_Adventures_of_Sherlock_Holmes.jpg");
+            InputStream is = assetManager.open("Alice_in_Wonderland.jpg");
             byte[] bytes = IOUtils.toByteArray(is);
             final AVFile avFile = new AVFile("cover_url", bytes);
             avFile.saveInBackground(new SaveCallback() {
@@ -61,9 +62,9 @@ public class AVService {
                     if (e == null) {
                         Toast.makeText(context, "11success", Toast.LENGTH_LONG)
                                 .show();
-                        AVUserBook AVUserBook = new AVUserBook("The Adventures of Sherlock Holmes",
-                                "Arthur Conan Doyle", avFile, 0, false);
-                        AVUserBook.saveInBackground(new SaveCallback() {
+                        AVBook book = new AVBook("Alice in Wonderland",
+                                "Lewis Carroll", avFile, 3);
+                        book.saveInBackground(new SaveCallback() {
                             @Override
                             public void done(AVException e) {
                                 if (e == null) {

@@ -1,11 +1,25 @@
-<LinearLayout
-    android:id="@+id/words_container"
+<com.reader.dialysis.view.IndicatorWrapper
+    android:id="@+id/indicator_wrapper"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="@dimen/padding10"
-    tools:context="com.reader.dialysis.fragment.WordsFragment">
+    android:layout_height="match_parent"
+    app:drawable="@drawable/ic_spinner">
 
-</LinearLayout>
+    <ScrollView
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <LinearLayout
+            android:id="@+id/words_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/padding10">
+
+        </LinearLayout>
+
+    </ScrollView>
+</com.reader.dialysis.view.IndicatorWrapper>
