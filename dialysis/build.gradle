@@ -31,7 +31,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'cn.leancloud.android:avoscloud-sdk:v2.7+'
+    compile 'cn.leancloud.android:avoscloud-sdk:v2.7'
     compile 'com.android.support:appcompat-v7:22.1.0'
     compile 'com.android.support:support-v4:22.0.+'
     compile 'com.android.support:cardview-v7:22.0.0'
